@@ -26,6 +26,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.init_ui()
 
+    # 主界面UI设置
     def init_ui(self) -> None:
         self.setWindowTitle(self.window_title)
         self.init_dock()
@@ -36,7 +37,7 @@ class MainWindow(QtWidgets.QMainWindow):
             'strategy_name': 'chantu',
             'vt_symbol': '600519',
             'setting': {
-                'start_time': "2021-11-01",
+                'start_time': "2022-08-01",
                 'include': True,
                 'interval': Interval.MINUTE,
                 'include_feature': False,
@@ -46,11 +47,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 'time_interval': 0
             },
         })
+        # TODO 打开程序就不跑了？
         # self.main_engine.put(event)
 
 
     def init_dock(self) -> None:
         market_widget, market_dock = self.create_dock(
+            # 和缠论图形生成关联的地方
             ChanTuManager, "行情", QtCore.Qt.LeftDockWidgetArea
         )
         market_dock.raise_()
@@ -141,6 +144,7 @@ class MainWindow(QtWidgets.QMainWindow):
             name: str,
             area: int
     ) -> Tuple[QtWidgets.QWidget, QtWidgets.QDockWidget]:
+        # 这里在widget里传入了engine
         widget = widget_class(self.main_engine)
 
         dock = QtWidgets.QDockWidget(name)
@@ -150,6 +154,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(area, dock)
         return widget, dock
 
+    # 退出后的操作
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         reply = QtWidgets.QMessageBox.question(
             self,
@@ -170,6 +175,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             event.ignore()
 
+    # 设置账号， 关于的时候打开新的widget
     def open_widget(self, widget_class: QtWidgets.QWidget, name: str) -> None:
         widget = self.widgets.get(name, None)
         if not widget:

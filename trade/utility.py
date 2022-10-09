@@ -124,6 +124,7 @@ def get_digits(value: float) -> int:
 
 
 def check_run_time() -> bool:
+    """ 当前时间是否是开盘时间 """
     dtime = datetime.datetime
     now = dtime.now()
     now_str = str(now.date())

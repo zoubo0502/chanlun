@@ -40,20 +40,28 @@ HandlerType = Callable[[Event], None]
 class MainEngine:
 
     def __init__(self, interval: int = 1):
+        # 时间间隔，想要一次性显示所有的画图，是通过这个吗？
         self._interval: int = interval
+
         self._queue: Queue = Queue()
         self._active: bool = False
+
+        # 几个线程任务
         self._thread: Thread = Thread(target=self._run)
-        self._timer: Thread = Thread(target=self._run_timer)
-        self._bar: Thread = Thread(target=self._run_bar)
+        # self._timer: Thread = Thread(target=self._run_timer)
+        # self._bar: Thread = Thread(target=self._run_bar)
+
         self._bar_map: defaultdict = defaultdict(str)
         self._handlers: defaultdict = defaultdict(list)
         self._symbol_set: Set[str] = set()
         self._general_handlers: List = []
         os.chdir(TRADER_DIR)
+
+        # 启动线程任务
         self.start()
 
     def _run(self) -> None:
+        """ 不停地从queue里获取event """
         while self._active:
             try:
                 event = self._queue.get(block=True, timeout=1)
@@ -62,6 +70,7 @@ class MainEngine:
                 pass
 
     def _process(self, event: Event) -> None:
+        """ 根据event类型，处理event """
         if event.type in self._handlers:
             [handler(event) for handler in self._handlers[event.type]]
 
@@ -69,19 +78,22 @@ class MainEngine:
             [handler(event) for handler in self._general_handlers]
 
     def _run_bar(self) -> None:
+        """ 实时模拟获取行情地，暂时应该是没用上 """
         while self._active:
             if check_run_time():
                 for vt_symbol in self._symbol_set:
+                    # TODO 这个方法是不是进不来？？？
                     data = jqdata_client.query_bar_xq(vt_symbol)
                     if data and (not self._bar_map[vt_symbol] or self._bar_map[vt_symbol] != str(data.datetime)):
                         event = Event(EVENT_BAR, data)
                         self.put(event)
                         self._bar_map[vt_symbol] = str(data.datetime)
-            sleep(5)
+            # sleep(5)
 
     def _run_timer(self) -> None:
+        """ 定时地放入时间event数据， 没发现有什么用"""
         while self._active:
-            sleep(self._interval)
+            # sleep(self._interval)
             event = Event(EVENT_TIMER)
             self.put(event)
 
@@ -94,8 +106,9 @@ class MainEngine:
     def start(self) -> None:
         self._active = True
         self._thread.start()
-        self._timer.start()
-        self._bar.start()
+        # TODO 暂时没看到有何用处，后续看能怎么利用起来
+        # self._timer.start()
+        # self._bar.start()
 
     def stop(self) -> None:
         self._active = False

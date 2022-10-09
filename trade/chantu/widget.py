@@ -61,6 +61,7 @@ class ChanTuManager(QtWidgets.QWidget):
     def load(self, kline_html):
         kline_html.page().runJavaScript(self.ans)
 
+    # 运行缠论分析
     def run_chan(self, event: Event):
         if self.thread and self.thread.is_alive():
             self.state = True
@@ -115,11 +116,12 @@ class ChanTuManager(QtWidgets.QWidget):
         time_start = time_end
         i = 1
         for bar in BarDataList:
+            print(f'bar number {i}, ratio: {round(i / len(BarDataList) * 100, 2)}%')
             chan_strategy.on_bar(bar)
             if self.state:
                 break
-            if self.render_interval > 0 and i % self.render_interval == 0:
-                self.render_html(chan_strategy, setting['include'])
+            # if self.render_interval > 0 and i % self.render_interval == 0:
+            #     self.render_html(chan_strategy, setting['include'])
             i += 1
         self.render_html(chan_strategy, setting['include'])
         chan_map = chan_strategy.chan_freq_map
@@ -233,9 +235,11 @@ class ChanTuManager(QtWidgets.QWidget):
         print("invalid: S1\tS2\tS3")
         print(f'{len(s1_invalid)}\t{len(s2_invalid)}\t{len(s3_invalid)}')
 
+    # 注册event
     def register_event(self):
         self.signal_chantu.connect(self.run_chan)
         self.main_engine.register(EVENT_CHANTU, self.signal_chantu.emit)
+
         self.signal_render.connect(self.render_event)
         self.main_engine.register(EVENT_RENDER, self.signal_render.emit)
 

@@ -424,7 +424,9 @@ class ChanTuWidget(QtWidgets.QDialog):
         self.setWindowTitle("股票缠图")
         self.setFixedWidth(400)
         self.jquser_line = QtWidgets.QLineEdit()
+        self.jquser_line.setText("18698576953")
         self.jqpass_line = QtWidgets.QLineEdit()
+        self.jqpass_line.setText("18050010137@Zb")
         self.symbol_line = QtWidgets.QLineEdit()
         self.symbol_line.setText("600809")
         self.k_line_include_combo = QtWidgets.QComboBox()
@@ -443,7 +445,7 @@ class ChanTuWidget(QtWidgets.QDialog):
         self.gz_combo.addItems(['是', '否'])
         self.gz_combo.setCurrentIndex(0)
         self.time_interval_line = QtWidgets.QLineEdit()
-        self.time_interval_line.setText("10")
+        self.time_interval_line.setText("1")
         self.start_time_line = QtWidgets.QLineEdit()
         self.start_time_line.setText("2022-01-01")
 
